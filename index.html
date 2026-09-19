@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kuis Ujian Masuk SMA</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 20px 15px;
+      font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+      color: #222;
+    }
+
+    .container {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 25px;
+      max-width: 750px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .3);
+      max-height: calc(100vh - 40px);
+      overflow-y: auto;
+      scroll-behavior: smooth;
+    }
+
+    .container::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .container::-webkit-scrollbar-track {
+      background: #f0f0f0;
+      border-radius: 4px;
+    }
+
+    .container::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border-radius: 4px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #3a2e7a;
+      margin-bottom: 10px;
+      font-size: 24px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #555;
+      margin-bottom: 15px;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .info-bar {
+      display: flex;
+      justify-content: space-between;
+      background: #eef0ff;
+      padding: 12px 18px;
+      border-radius: 12px;
+      margin-bottom: 15px;
+      font-weight: 700;
+      font-size: 16px;
+      color: #2c2c54;
+      border: 2px solid #d0d5ff;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .progress {
+      height: 10px;
+      background: #ddd;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-bottom: 15px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      width: 0%;
+      transition: width .4s;
+    }
+
+    .question {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 14px;
+      line-height: 1.5;
+      color: #2c2c54;
+      background: #b9f5b0;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .option {
+      padding: 14px 16px;
+      background: #5a15ef;
+      border: 2px solid #e0dcf5;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: .2s;
+      font-size: 14px;
+      text-align: left;
+    }
+
+    .option:hover:not(:disabled) {
+      background: #d62a55;
+      transform: translateX(5px);
+    }
+
+    .option:disabled {
+      cursor: not-allowed;
+      opacity: 0.9;
+    }
+
+    .option.correct {
+      background: #b9f5b0;
+      border-color: #2e7d32;
+      color: #1b5e20;
+      font-weight: 400;
+    }
+
+    .option.wrong {
+      background: #ffb3b3;
+      border-color: #c62828;
+      color: #7f0000;
+      font-weight: 400;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 5px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #ffffff;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 13px;
+      transition: .2s;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 14px rgba(0, 0, 0, .25);
+    }
+
+    button:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-small {
+      flex: 0 0 auto;
+      padding: 12px 14px;
+      font-size: 14px;
+      background: linear-gradient(135deg, #f093fb, #f5576c);
+    }
+
+    .feedback {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 12px;
+      font-weight: 500;
+      text-align: center;
+      display: none;
+      font-size: 15px;
+      line-height: 1.4;
+    }
+
+    .feedback.show {
+      display: block;
+    }
+
+    .feedback.benar {
+      background: #b9f5b0;
+      color: #1b5e20;
+      border: 2px solid #2e7d32;
+    }
+
+    .feedback.salah {
+      background: #ffb3b3;
+      color: #7f0000;
+      border: 2px solid #c62828;
+    }
+
+    .start-screen,
+    .end-screen {
+      text-align: center;
+      padding: 15px 10px;
+    }
+
+    .end-screen h2 {
+      color: #3a2e7a;
+      margin-bottom: 10px;
+      font-size: 26px;
+    }
+
+    .score-big {
+      font-size: 50px;
+      font-weight: 900;
+      color: #764ba2;
+      margin: 10px 0;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, .1);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .music-toggle {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      background: #fff;
+      border: 2px solid #764ba2;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 20px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, .2);
+      z-index: 100;
+    }
+
+    p {
+      color: #333;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .info-box {
+      background: #fff3cd;
+      border: 2px solid #ffc107;
+      color: #856404;
+      padding: 12px;
+      border-radius: 10px;
+      margin: 15px 0;
+      font-size: 14px;
+      text-align: left;
+    }
+
+    .info-box strong {
+      color: #856404;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+
+      .container {
+        padding: 18px;
+        max-height: calc(100vh - 20px);
+      }
+
+      h1 {
+        font-size: 20px;
+      }
+
+      .question {
+        font-size: 14px;
+        padding: 12px;
+      }
+
+      .option {
+        font-size: 14px;
+        padding: 12px 14px;
+      }
+
+      .info-bar {
+        font-size: 14px;
+        padding: 10px 14px;
+      }
+
+      .score-big {
+        font-size: 50px;
+      }
+
+      .music-toggle {
+        width: 42px;
+        height: 42px;
+        font-size: 18px;
+        top: 10px;
+        right: 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <button class="music-toggle" id="musicBtn" title="Musik">🔇</button>
+
+  <div class="container" id="mainContainer">
+    <div id="startScreen" class="start-screen">
+      <h1>🌱 Kuis Ujian Masuk SMA</h1>
+      <p class="subtitle">BHS Indo, BHS. Inggris, MKT, IPA, Komputer, Etika, Warna</p>
+      <div class="info-box">
+        <strong>📱 Info Penting untuk HP Android:</strong><br>
+        • Pastikan <strong>volume media HP tidak silent/mute</strong><br>
+        • Tekan <strong>"Test Suara"</strong> untuk mengaktifkan audio<br>
+        • Izinkan suara jika browser meminta
+      </div>
+      <p style="margin:15px 0;">Jawab 50 pertanyaan. Skor skala <strong>10 - 100</strong>.</p>
+      <button id="testBtn" onclick="testSuara()"
+        style="margin-bottom:10px; background: linear-gradient(135deg, #11998e, #38ef7d);">🔊 Test Suara Dulu</button>
+      <button onclick="mulaiKuis()">🎯 Mulai Kuis</button>
+    </div>
+
+    <div id="quizScreen" class="hidden">
+      <h1>🌱 Kuis Ujian Sekolah </h1>
+      <div class="info-bar">
+        <span>Soal: <span id="qNum">1</span>/50</span>
+        <span>Skor: <span id="score">2</span></span>
+      </div>
+      <div class="progress">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="question" id="questionText"></div>
+      <div class="options" id="options"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="controls">
+        <button class="btn-small" onclick="bacaSoal()">🔊 Baca Lagi</button>
+        <button id="nextBtn" onclick="nextSoal()" disabled>Lanjut ➡</button>
+      </div>
+    </div>
+
+    <div id="endScreen" class="end-screen hidden">
+      <h2>🎉 Kuis Selesai!</h2>
+      <p>Skor akhir kamu:</p>
+      <div class="score-big" id="finalScore">10</div>
+      <p id="pesanAkhir" style="margin-bottom:15px;"></p>
+      <button onclick="location.reload()">🔄 Ulangi Kuis</button>
+    </div>
+  </div>
+
+  <script>
+    // ====== 30 PERTANYAAN ======
+    const soal = [
+      {c:"A. Bahasa Indonesia",q:"Ide pokok paragraf tersebut adalah ....",o:["Jenis-jenis buku di perpustakaan","Manfaat perpustakaan bagi siswa","Perpustakaan menyediakan majalah","Siswa harus membaca buku cerita","Buku pelajaran merupakan sumber informasi"],a:1},
+{c:"A. Bahasa Indonesia",q:"Kalimat berikut yang menggunakan bahasa baku adalah ....",o:["Saya nggak tahu tentang kegiatan itu.","Mereka sedang ngumpul di aula.","Para siswa sedang mengikuti upacara.","Dia udah menyelesaikan tugasnya.","Kami bakal pergi ke perpustakaan."],a:2},
+{c:"A. Bahasa Indonesia",q:"Perhatikan kalimat: “Rina rajin membaca buku sehingga pengetahuannya semakin luas.” Kata sehingga dalam kalimat tersebut menunjukkan hubungan ....",o:["pertentangan","sebab-akibat","pilihan","penambahan","perbandingan"],a:1},
+{c:"A. Bahasa Indonesia",q:"Tujuan utama teks prosedur adalah ....",o:["menceritakan pengalaman seseorang","menggambarkan suatu tempat","menjelaskan langkah-langkah melakukan sesuatu","menyampaikan pendapat tentang suatu masalah","menghibur pembaca dengan cerita"],a:2},
+{c:"A. Bahasa Indonesia",q:"Kalimat yang paling tepat digunakan dalam sebuah poster tentang kebersihan sekolah adalah ....",o:["Sekolah kami sangat luas dan indah.","Kebersihan sekolah merupakan hal yang biasa.","Ayo, jaga kebersihan sekolah demi kenyamanan bersama!","Siswa biasanya membersihkan kelas setiap hari.","Sekolah memiliki banyak tempat sampah."],a:2},
+
+{c:"B. Bahasa Inggris",q:"Choose the correct answer! Rina: “What are you doing?” Sinta: “I ____ a book.”",o:["read","reads","am reading","reading","is reading"],a:2},
+{c:"B. Bahasa Inggris",q:"Choose the correct answer! “My father ____ to work every morning.”",o:["go","goes","going","gone","is go"],a:1},
+{c:"B. Bahasa Inggris",q:"The opposite meaning of “expensive” is ....",o:["cheap","large","beautiful","difficult","comfortable"],a:0},
+{c:"B. Bahasa Inggris",q:"Read the text! Andi is a student. He likes drawing and designing pictures. He often uses a computer to make digital illustrations. What does Andi like?",o:["Playing football","Singing songs","Drawing and designing pictures","Reading novels","Cooking food"],a:2},
+{c:"B. Bahasa Inggris",q:"Choose the correct sentence.",o:["She have two pencils.","She has two pencils.","She having two pencils.","She haves two pencils.","She is have two pencils."],a:1},
+
+{c:"C. Etika & Tanggung Jawab Umum",q:"Salah satu sikap yang mencerminkan toleransi antarumat beragama adalah ....",o:["memaksakan agama kepada orang lain","menghormati teman yang sedang menjalankan ibadah","mengejek perbedaan agama","melarang orang lain beribadah","menghindari semua orang yang berbeda agama"],a:1},
+{c:"C. Etika & Tanggung Jawab Umum",q:"Kejujuran merupakan salah satu sikap terpuji. Contoh perilaku jujur di sekolah adalah ....",o:["menyontek ketika ujian","mengambil barang teman tanpa izin","mengakui kesalahan yang dilakukan","memberikan jawaban palsu kepada guru","menyembunyikan barang milik orang lain"],a:2},
+{c:"C. Etika & Tanggung Jawab Umum",q:"Sikap bertanggung jawab dapat ditunjukkan dengan ....",o:["menyalahkan orang lain","menghindari tugas","menyelesaikan tugas yang diberikan dengan baik","meninggalkan pekerjaan sebelum selesai","menunggu orang lain menyelesaikan tugas"],a:2},
+{c:"C. Etika & Tanggung Jawab Umum",q:"Menghormati orang tua dan guru merupakan bentuk ....",o:["kesombongan","kedisiplinan","akhlak terpuji","persaingan","keberanian"],a:2},
+{c:"C. Etika & Tanggung Jawab Umum",q:"Ketika melihat teman mengalami kesulitan, sikap yang sebaiknya dilakukan adalah ....",o:["menertawakannya","membiarkannya","membantu sesuai kemampuan","menyalahkannya","menjauhinya"],a:2},
+
+{c:"D. IPAS",q:"Organ tubuh manusia yang berfungsi utama untuk memompa darah ke seluruh tubuh adalah ....",o:["paru-paru","ginjal","jantung","hati","lambung"],a:2},
+{c:"D. IPAS",q:"Perubahan energi yang terjadi pada kipas angin adalah ....",o:["energi listrik menjadi energi gerak","energi gerak menjadi energi listrik","energi panas menjadi energi kimia","energi cahaya menjadi energi panas","energi kimia menjadi energi cahaya"],a:0},
+{c:"D. IPAS",q:"Contoh sumber energi terbarukan adalah ....",o:["batu bara","minyak bumi","gas alam","matahari","bensin"],a:3},
+{c:"D. IPAS",q:"Hubungan antara makhluk hidup dengan lingkungannya disebut ....",o:["populasi","ekosistem","komunitas","habitat","individu"],a:1},
+{c:"D. IPAS",q:"Salah satu dampak pencemaran udara adalah ....",o:["meningkatkan kualitas udara","menyebabkan gangguan pernapasan","membuat air menjadi lebih bersih","meningkatkan kesuburan tanah","memperbanyak oksigen di udara"],a:1},
+
+{c:"E. Matematika",q:"Hasil dari: 3 × (8 + 4) − 10 = ....",o:["24","26","28","30","32"],a:1},
+{c:"E. Matematika",q:"Jika (2x + 6 = 16), maka nilai (x) adalah ....",o:["3","4","5","6","7"],a:2},
+{c:"E. Matematika",q:"Sebuah persegi panjang memiliki panjang 12 cm dan lebar 8 cm. Luasnya adalah ....",o:["20 cm²","40 cm²","80 cm²","96 cm²","120 cm²"],a:3},
+{c:"E. Matematika",q:"Nilai dari: 25% × 200 = ....",o:["25","40","50","75","100"],a:2},
+{c:"E. Matematika",q:"Sebuah segitiga memiliki alas 10 cm dan tinggi 8 cm. Luas segitiga tersebut adalah ....",o:["18 cm²","30 cm²","40 cm²","50 cm²","80 cm²"],a:2},
+
+{c:"F. Komputer / Informatika",q:"Perangkat komputer yang digunakan untuk memasukkan teks dan angka adalah ....",o:["monitor","printer","keyboard","speaker","proyektor"],a:2},
+{c:"F. Komputer / Informatika",q:"Perangkat yang berfungsi menampilkan gambar atau hasil kerja komputer adalah ....",o:["keyboard","mouse","monitor","scanner","flashdisk"],a:2},
+{c:"F. Komputer / Informatika",q:"Program yang umum digunakan untuk mengolah gambar atau desain grafis adalah ....",o:["Adobe Photoshop","Calculator","Notepad","File Explorer","Windows Media Player"],a:0},
+{c:"F. Komputer / Informatika",q:"Dalam desain grafis, fungsi utama warna adalah ....",o:["hanya memperbesar ukuran gambar","memberikan daya tarik dan menyampaikan pesan visual","menghapus semua gambar","memperlambat komputer","mengurangi resolusi gambar"],a:1},
+{c:"F. Komputer / Informatika",q:"Format file yang umum digunakan untuk menyimpan gambar dengan latar belakang transparan adalah ....",o:[".MP3",".MP4",".DOCX",".PNG",".TXT"],a:3},
+
+{c:"Pengetahuan Warna - Ujian Masuk SMK DKV",q:"Warna yang termasuk warna primer adalah ....",o:["Hijau, jingga, ungu","Merah, kuning, biru","Merah, hijau, ungu","Kuning, hijau, jingga","Biru, ungu, hijau"],a:1},
+{c:"Pengetahuan Warna - Ujian Masuk SMK DKV",q:"Jika warna merah dicampurkan dengan warna kuning, akan menghasilkan warna ....",o:["Hijau","Ungu","Jingga","Cokelat","Biru"],a:2},
+{c:"Pengetahuan Warna - Ujian Masuk SMK DKV",q:"Campuran warna biru dan kuning dalam pencampuran warna pigmen menghasilkan warna ....",o:["Merah","Hijau","Ungu","Jingga","Cokelat"],a:1},
+{c:"Pengetahuan Warna - Ujian Masuk SMK DKV",q:"Warna yang berada berseberangan pada lingkaran warna disebut warna ....",o:["Analogus","Netral","Monokrom","Komplementer","Pastel"],a:3},
+{c:"Pengetahuan Warna - Ujian Masuk SMK DKV",q:"Pasangan warna komplementer yang tepat adalah ....",o:["Merah dan jingga","Kuning dan hijau","Biru dan jingga","Hijau dan biru","Merah dan kuning"],a:2},
+{c:"Pengetahuan Warna - Ujian Masuk SMK DKV",q:"Warna merah, jingga, dan kuning pada umumnya memberikan kesan ....",o:["Dingin dan tenang","Hangat dan energik","Gelap dan sedih","Netral dan pasif","Sejuk dan damai"],a:1},
+{c:"Pengetahuan Warna - Ujian Masuk SMK DKV",q:"Warna biru pada desain sering digunakan untuk memberikan kesan ....",o:["Tenang dan terpercaya","Marah dan berbahaya","Panas dan agresif","Ceria dan mencolok","Gelisah dan kacau"],a:0},
+{c:"Pengetahuan Warna - Ujian Masuk SMK DKV",q:"Warna hitam, putih, dan abu-abu termasuk kelompok warna ....",o:["Primer","Sekunder","Tersier","Netral","Komplementer"],a:3},
+{c:"Pengetahuan Warna - Ujian Masuk SMK DKV",q:"Dalam desain grafis, penggunaan warna yang memiliki tingkat terang dan gelap yang berbeda dapat membantu menciptakan ....",o:["Kontras","Kebisingan","Kesalahan","Distorsi","Penghapusan gambar"],a:0},
+{c:"Pengetahuan Warna - Ujian Masuk SMK DKV",q:"Seorang desainer membuat poster bertema lingkungan hidup. Kombinasi warna yang paling sesuai untuk memperkuat kesan alam adalah ....",o:["Hijau dan cokelat","Merah dan hitam","Ungu dan merah muda","Hitam dan abu-abu","Jingga dan merah"],a:0},
+
+{c:"Psikotes & Pengetahuan SMK Mutiara Bangsa 7",q:"Perhatikan pola bilangan berikut: 2 – 4 – 8 – 16 – .... Angka berikutnya adalah ....",o:["18","20","24","30","32"],a:4},
+{c:"Psikotes & Pengetahuan SMK Mutiara Bangsa 7",q:"Jika semua siswa DKV harus memiliki sikap kreatif, dan Andi adalah siswa DKV, maka kesimpulan yang tepat adalah ....",o:["Andi tidak perlu belajar","Andi harus memiliki sikap kreatif","Andi pasti menjadi desainer terkenal","Andi tidak perlu mengikuti praktik","Andi hanya perlu belajar komputer"],a:1},
+{c:"Psikotes & Pengetahuan SMK Mutiara Bangsa 7",q:"Perhatikan pola berikut: A – C – E – G – .... Huruf berikutnya adalah ....",o:["H","I","J","K","L"],a:1},
+{c:"Psikotes & Pengetahuan SMK Mutiara Bangsa 7",q:"Seorang siswa diberi tugas membuat poster. Ia menyelesaikan 3 poster dalam 2 hari. Jika kemampuan kerjanya tetap sama, dalam 6 hari ia dapat menyelesaikan ....",o:["6 poster","7 poster","8 poster","9 poster","12 poster"],a:3},
+{c:"Psikotes & Pengetahuan SMK Mutiara Bangsa 7",q:"Jika kamu mendapatkan tugas desain yang sulit, tindakan yang paling tepat adalah ....",o:["langsung menyerah","menunggu teman mengerjakan","mencoba memahami masalah dan mencari solusi","tidak mengumpulkan tugas","menyalahkan guru"],a:2},
+{c:"Psikotes & Pengetahuan SMK Mutiara Bangsa 7",q:"SMK Mutiara Bangsa 7 memiliki bidang/konsentrasi Desain Komunikasi Visual (DKV). Kegiatan yang paling sesuai dengan bidang tersebut adalah ....",o:["Membuat desain poster dan konten visual","Menghafalkan seluruh buku pelajaran","Mengelola sawah","Memperbaiki mesin kendaraan","Memasak makanan di dapur"],a:0},
+{c:"Psikotes & Pengetahuan SMK Mutiara Bangsa 7",q:"Dalam pembelajaran DKV, kemampuan menggunakan komputer penting karena ....",o:["komputer hanya digunakan untuk bermain","komputer dapat digunakan untuk membuat dan mengolah karya visual","komputer menggantikan semua pekerjaan guru","komputer hanya digunakan untuk mengetik","komputer tidak berhubungan dengan desain"],a:1},
+{c:"Psikotes & Pengetahuan SMK Mutiara Bangsa 7",q:"Salah satu sikap yang penting dimiliki siswa SMK Mutiara Bangsa 7 dalam mengikuti pembelajaran adalah ....",o:["tidak mau menerima kritik","mudah menyerah","disiplin, kreatif, dan bertanggung jawab","selalu bekerja sendiri","menghindari kegiatan praktik"],a:2},
+{c:"Psikotes & Pengetahuan SMK Mutiara Bangsa 7",q:"Perhatikan hubungan berikut: Desainer : Desain = Fotografer : ....",o:["Kamera","Foto","Komputer","Warna","Poster"],a:1},
+{c:"Psikotes & Pengetahuan SMK Mutiara Bangsa 7",q:"Seorang calon siswa SMK Mutiara Bangsa 7 tertarik masuk DKV karena senang menggambar, membuat konten digital, dan ingin mengembangkan kreativitas. Sikap yang paling tepat adalah ....",o:["mengembangkan minat tersebut melalui latihan dan pembelajaran","hanya mengandalkan bakat","tidak perlu belajar teori","hanya bermain komputer","menunggu orang lain mengajarkan semuanya"],a:0}
+];
+
+    // ====== FUNGSI ACAK (Fisher-Yates Shuffle) ======
+    function shuffleArray(arr) {
+      const shuffled = [...arr];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+
+    // ====== AUDIO SYSTEM ======
+    let audioCtx = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+        catch (e) { console.warn('AudioContext error:', e); }
+      }
+      return audioCtx;
+    }
+
+    function unlockAudio() {
+      const ctx = initAudio();
+      if (!ctx) return;
+      if (ctx.state === 'suspended') ctx.resume();
+      try {
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.frequency.value = 440;
+        g.gain.setValueAtTime(0.001, ctx.currentTime);
+        o.connect(g); g.connect(ctx.destination);
+        o.start(); o.stop(ctx.currentTime + 0.05);
+      } catch (e) { }
+    }
+
+    function playTone(freq, dur, type = 'sine', vol = 0.3) {
+      const ctx = initAudio();
+      if (!ctx) return;
+      if (ctx.state === 'suspended') ctx.resume();
+      try {
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = type; o.frequency.value = freq;
+        g.gain.setValueAtTime(vol, ctx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+        o.connect(g); g.connect(ctx.destination);
+        o.start(); o.stop(ctx.currentTime + dur);
+      } catch (e) { }
+    }
+
+    function suaraKlik() { playTone(800, 0.1, 'square', 0.2); }
+    function suaraBenar() {
+      playTone(523, 0.15, 'sine', 0.3);
+      setTimeout(() => playTone(659, 0.15, 'sine', 0.3), 150);
+      setTimeout(() => playTone(784, 0.3, 'sine', 0.3), 300);
+    }
+    function suaraSalah() {
+      playTone(300, 0.2, 'sawtooth', 0.25);
+      setTimeout(() => playTone(200, 0.4, 'sawtooth', 0.25), 200);
+    }
+
+    // ====== MUSIK LATAR ======
+    let musikOn = false, musikInterval;
+    const nadaMusik = [261, 329, 392, 329, 261, 392, 329, 261, 349, 293, 261, 329];
+    let idxNada = 0;
+
+    function toggleMusik() {
+      unlockAudio();
+      musikOn = !musikOn;
+      document.getElementById('musicBtn').textContent = musikOn ? '🔊' : '🔇';
+      if (musikOn) {
+        musikInterval = setInterval(() => {
+          playTone(nadaMusik[idxNada % nadaMusik.length], 0.4, 'triangle', 0.08);
+          idxNada++;
+        }, 500);
+      } else {
+        clearInterval(musikInterval);
+      }
+    }
+    document.getElementById('musicBtn').onclick = toggleMusik;
+
+
+
+    // ====== TEXT TO SPEECH ======
+    let voiceID = null;
+
+    function pilihVoiceIndonesia() {
+      const voices = speechSynthesis.getVoices();
+      if (voices.length === 0) return null;
+      let voice = voices.find(v => v.lang === 'id-ID') ||
+        voices.find(v => v.lang.startsWith('id')) ||
+        voices.find(v => v.lang === 'ms-MY') ||
+        voices.find(v => v.lang.startsWith('ms'));
+      if (voice) voiceID = voice;
+      return voice;
+    }
+
+    if ('speechSynthesis' in window) {
+      pilihVoiceIndonesia();
+      speechSynthesis.onvoiceschanged = pilihVoiceIndonesia;
+    }
+
+    function bicara(teks) {
+      if (!('speechSynthesis' in window)) return;
+      speechSynthesis.cancel();
+      try {
+        const u = new SpeechSynthesisUtterance(teks);
+        if (voiceID) u.voice = voiceID;
+        u.lang = 'id-ID';
+        u.rate = 0.95;
+        u.pitch = 1;
+        u.volume = 1;
+        speechSynthesis.speak(u);
+      } catch (e) { console.warn('Bicara error:', e); }
+    }
+
+    function hentikanSuara() {
+      if ('speechSynthesis' in window) {
+        speechSynthesis.cancel();
+      }
+    }
+
+    function testSuara() {
+      unlockAudio();
+      setTimeout(() => {
+        playTone(440, 0.3, 'sine', 0.3);
+        setTimeout(() => playTone(660, 0.3, 'sine', 0.3), 350);
+      }, 100);
+      setTimeout(() => bicara("Test suara berhasil. Selamat belajar!"), 200);
+      alert("🔊 Jika kamu mendengar suara beep dan bicara, berarti audio berfungsi!");
+    }
+
+    // ====== GAME LOGIC ======
+    let idx = 0, skor = 2, sudahDijawab = false;
+    let timeoutBacaSoal = null; // 🔑 Variabel untuk menyimpan ID timeout
+
+    function mulaiKuis() {
+      unlockAudio();
+      if ('speechSynthesis' in window) {
+        const u = new SpeechSynthesisUtterance(" ");
+        speechSynthesis.speak(u);
+      }
+      document.getElementById('startScreen').classList.add('hidden');
+      document.getElementById('quizScreen').classList.remove('hidden');
+      tampilkanSoal();
+      if (!musikOn) toggleMusik();
+    }
+
+    function tampilkanSoal() {
+      sudahDijawab = false;
+
+      // 🔑 Batalkan timeout pembacaan soal sebelumnya (jika ada)
+      if (timeoutBacaSoal) {
+        clearTimeout(timeoutBacaSoal);
+        timeoutBacaSoal = null;
+      }
+      hentikanSuara(); // Stop semua suara yang sedang berjalan
+
+      const s = soal[idx];
+      document.getElementById('qNum').textContent = idx + 1;
+      document.getElementById('score').textContent = skor;
+      document.getElementById('progressFill').style.width = ((idx) / 50 * 100) + '%';
+      document.getElementById('questionText').textContent = (idx + 1) + ". " + s.q;
+      document.getElementById('feedback').className = 'feedback';
+      document.getElementById('nextBtn').disabled = true;
+
+      const optDiv = document.getElementById('options');
+      optDiv.innerHTML = '';
+      const huruf = ['A', 'B', 'C', 'D', 'E'];
+      s.o.forEach((opsi, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'option';
+        btn.textContent = huruf[i] + ". " + opsi;
+        btn.addEventListener('click', () => pilihJawaban(i, btn));
+        optDiv.appendChild(btn);
+      });
+
+      document.getElementById('mainContainer').scrollTo({ top: 0, behavior: 'smooth' });
+
+      // 🔑 Simpan ID timeout agar bisa dibatalkan nanti
+      timeoutBacaSoal = setTimeout(() => {
+        if (!sudahDijawab) { // 🔑 Hanya baca jika belum dijawab
+          bicara(s.q + ". Pilihan: " + s.o.join(", "));
+        }
+        timeoutBacaSoal = null;
+      }, 500);
+    }
+
+    function bacaSoal() {
+      unlockAudio();
+      // 🔑 Batalkan timeout yang sedang berjalan
+      if (timeoutBacaSoal) {
+        clearTimeout(timeoutBacaSoal);
+        timeoutBacaSoal = null;
+      }
+      const s = soal[idx];
+      bicara(s.q + ". Pilihan: " + s.o.join(", "));
+    }
+
+    function pilihJawaban(pilihan, btn) {
+      if (sudahDijawab) return;
+      sudahDijawab = true;
+
+      unlockAudio();
+
+      // 🔑 KUNCI PERBAIKAN: Batalkan timeout pembacaan soal
+      if (timeoutBacaSoal) {
+        clearTimeout(timeoutBacaSoal);
+        timeoutBacaSoal = null;
+      }
+
+      // 🔑 Hentikan suara apapun yang sedang diputar
+      hentikanSuara();
+
+      // Baru mainkan suara klik
+      setTimeout(suaraKlik, 50);
+
+      const s = soal[idx];
+      const buttons = document.querySelectorAll('.option');
+      buttons.forEach(b => b.disabled = true);
+
+      const fb = document.getElementById('feedback');
+      if (pilihan === s.a) {
+        btn.classList.add('correct');
+        skor += 2;
+        setTimeout(suaraBenar, 200);
+        fb.textContent = '✅ Benar! +2 poin';
+        fb.className = 'feedback show benar';
+        // 🔑 Beri jeda agar suara efek selesai dulu baru bicara
+        setTimeout(() => {
+          if (sudahDijawab) bicara("Benar!");
+        }, 700);
+      } else {
+        btn.classList.add('wrong');
+        buttons[s.a].classList.add('correct');
+        setTimeout(suaraSalah, 200);
+        fb.textContent = '❌ Salah. Jawaban benar: ' + ['A', 'B', 'C', 'D', 'E'][s.a] + ". " + s.o[s.a];
+        fb.className = 'feedback show salah';
+        setTimeout(() => {
+          if (sudahDijawab) bicara("Salah. Jawaban yang benar adalah " + s.o[s.a]);
+        }, 700);
+      }
+
+      document.getElementById('score').textContent = skor;
+      document.getElementById('nextBtn').disabled = false;
+
+      setTimeout(() => {
+        fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 100);
+    }
+
+    function nextSoal() {
+      unlockAudio();
+      // 🔑 Hentikan suara feedback sebelum lanjut
+      hentikanSuara();
+      suaraKlik();
+      idx++;
+      if (idx >= soal.length) {
+        selesai();
+      } else {
+        tampilkanSoal();
+      }
+    }
+
+    function selesai() {
+      document.getElementById('quizScreen').classList.add('hidden');
+      document.getElementById('endScreen').classList.remove('hidden');
+      document.getElementById('finalScore').textContent = skor;
+      document.getElementById('mainContainer').scrollTo({ top: 0, behavior: 'smooth' });
+
+      let pesan = "";
+      if (skor >= 90) pesan = "Kamu Mendapatkan 🏆, Luar biasa! Kamu sangat menguasai materi!";
+      else if (skor >= 70) pesan = "Kamu dapat 👍, Bagus! Terus belajar ya!";
+      else if (skor >= 40) pesan = "Hasilnya Lumayan, semangat ya, masih perlu belajar lagi.";
+      else pesan = "📚 Jangan menyerah, ayo baca ulang materinya!";
+
+      document.getElementById('pesanAkhir').textContent = pesan;
+
+      if (skor >= 70) setTimeout(suaraBenar, 300);
+      setTimeout(() => bicara("Kuis selesai. Skor kamu " + skor + " dari 100. " + pesan), 800);
+    }
+  </script>
+</body>
+
+</html>
